@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +16,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/token',[\App\Http\Controllers\token::class, 'index']);
+
+Route::post('/tokens/create', function (Request $request) {
+    $response = "";
+    return $response;
 });
