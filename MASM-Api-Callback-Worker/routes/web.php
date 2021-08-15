@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,9 +20,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/token',[\App\Http\Controllers\token::class, 'index']);
-
-Route::post('/tokens/create', function (Request $request) {
-    $response = "";
-    return $response;
-});
+Route::get('/mockTest',[\App\Http\Controllers\MockController::class,'mock']);

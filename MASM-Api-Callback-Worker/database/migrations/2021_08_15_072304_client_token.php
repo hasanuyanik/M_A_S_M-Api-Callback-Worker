@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Device extends Migration
+class ClientToken extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class Device extends Migration
      */
     public function up()
     {
-        Schema::create('device', function (Blueprint $table) {
+        Schema::create('client_token', function (Blueprint $table) {
             $table->integer('uid')->unique();
-            $table->integer('appId');
-            $table->string('language');
-            $table->string('operating_system');
+            $table->longText('token');
         });
     }
 
