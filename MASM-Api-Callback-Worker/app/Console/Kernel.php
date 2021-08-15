@@ -2,8 +2,10 @@
 
 namespace App\Console;
 
+use App\Models\Device;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -25,6 +27,18 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->call(function(){
+            try {
+                Device::create([
+                    "uid" => "111",
+                    "appId" => "222",
+                    "language" => "Turkce",
+                    "operating_system" => "Windows"
+                ]);
+            }catch (\Exception $e) {
+                Log::info("Gunaydin Hasan");
+            }
+        })->everyMinute();
     }
 
     /**

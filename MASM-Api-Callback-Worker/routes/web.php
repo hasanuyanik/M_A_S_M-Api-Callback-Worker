@@ -20,4 +20,3 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/mockTest',[\App\Http\Controllers\MockController::class,'mock']);

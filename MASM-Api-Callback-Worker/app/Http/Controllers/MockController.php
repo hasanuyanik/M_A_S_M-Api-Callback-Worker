@@ -22,11 +22,4 @@ class MockController extends Controller
        return $response;
     }
 
-    public function mock(){
-        $response = Http::post('https://5b572ba488d93a0014b0254d.mockapi.io/ios/library', [
-            'name' => 'Steve',
-            'role' => 'Network Administrator',
-        ]);
-        return $response;
-    }
 }

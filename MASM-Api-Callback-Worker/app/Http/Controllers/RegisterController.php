@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Device;
+use App\Models\Token;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Hash;
@@ -10,28 +12,29 @@ use Illuminate\Support\Str;
 class RegisterController extends Controller
 {
     public function tokenControl($tokenRaw){
-        $clientToken = $tokenRaw;
-        while($clientToken){
-            $basicToken = Hash::make($tokenRaw."".Str::random(100));
-            $clientToken=DB::table('client_token')->where('token',$basicToken)->first();
-        }
-        return $basicToken;
+            $clientToken = $tokenRaw;
+            while($clientToken){
+                $basicToken = Hash::make($tokenRaw."".Str::random(100));
+                $clientToken=Token::where('token',$basicToken)->first();
+            }
+            return $basicToken;
+
     }
 
     public function register(Request $request){
             if($request->uid && $request->appId) {
                 $tokenRaw = $request->uid."".$request->appId;
                 $basicToken = $this->tokenControl($tokenRaw);
-                DB::table('client_token')->where('uid',$request->uid)->delete();
-                DB::table('client_token')->insert([
-                    "uid" => $request->uid,
-                    "token" => $basicToken
+                Token::where('uid',$request->uid)->delete();
+                Token::create([
+                        "uid" => $request->uid,
+                        "token" => $basicToken
                 ]);
             }else{
                 return true;
             }
             try {
-                DB::table('device')->insert([
+                Device::create([
                     "uid" => $request->uid,
                     "appId" => $request->appId,
                     "language" => $request->language,

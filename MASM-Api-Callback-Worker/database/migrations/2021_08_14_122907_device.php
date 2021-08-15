@@ -14,7 +14,8 @@ class Device extends Migration
     public function up()
     {
         Schema::create('device', function (Blueprint $table) {
-            $table->integer('uid')->unique();
+            $table->id('deviceId')->unique();
+            $table->integer('uid');
             $table->integer('appId');
             $table->string('language');
             $table->string('operating_system');
