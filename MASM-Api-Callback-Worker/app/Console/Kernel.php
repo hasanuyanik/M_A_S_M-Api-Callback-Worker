@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Console\Commands\SubControlCommand;
+use App\Http\Controllers\SubscriptionController;
+use App\Jobs\SubExpireJob;
 use App\Models\Device;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -15,7 +18,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        SubControlCommand::class,
     ];
 
     /**
@@ -26,19 +29,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->call(function(){
-            try {
-                Device::create([
-                    "uid" => "111",
-                    "appId" => "222",
-                    "language" => "Turkce",
-                    "operating_system" => "Windows"
-                ]);
-            }catch (\Exception $e) {
-                Log::info("Gunaydin Hasan");
-            }
-        })->everyMinute();
+        $schedule->command('SubControlCommand')->everyFiveMinutes();
     }
 
     /**

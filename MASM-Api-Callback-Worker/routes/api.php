@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/register',[\App\Http\Controllers\RegisterController::class,'register']);
 Route::post('/purchase',[\App\Http\Controllers\PurchaseController::class,'purchase']);
-Route::post('/check-subscription',[\App\Http\Controllers\CheckSubscriptionController::class,'checkSubscription']);
+Route::post('/check-subscription',[\App\Http\Controllers\SubscriptionController::class,'checkSubscription']);
 
 Route::post('/google',[\App\Http\Controllers\MockController::class,'receiptControl']);
 Route::post('/ios',[\App\Http\Controllers\MockController::class,'receiptControl']);

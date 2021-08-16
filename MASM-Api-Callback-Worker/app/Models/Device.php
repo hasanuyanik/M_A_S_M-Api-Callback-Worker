@@ -17,7 +17,8 @@ class Device extends Model
         "uid",
         "appId",
         "language",
-        "operating_system"
+        "operating_system",
+        "token"
     ];
 
     public $timestamps = false;

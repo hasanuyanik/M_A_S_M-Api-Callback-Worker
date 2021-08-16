@@ -3,47 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
-use App\Models\Token;
 use Illuminate\Http\Request;
-use DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
-    public function tokenControl($tokenRaw){
-            $clientToken = $tokenRaw;
-            while($clientToken){
-                $basicToken = Hash::make($tokenRaw."".Str::random(100));
-                $clientToken=Token::where('token',$basicToken)->first();
-            }
-            return $basicToken;
-
-    }
-
     public function register(Request $request){
-            if($request->uid && $request->appId) {
-                $tokenRaw = $request->uid."".$request->appId;
-                $basicToken = $this->tokenControl($tokenRaw);
-                Token::where('uid',$request->uid)->delete();
-                Token::create([
-                        "uid" => $request->uid,
-                        "token" => $basicToken
+            $validator = Validator::make($request->all(), [
+                'uid' => 'required|string',
+                'appId' => 'required|string',
+                'language' => 'required|string',
+                'operating_system' => 'required|string'
+            ]);
+
+            if ( $validator->fails() ) {
+                Log::error('Request validation failed.', [
+                    'request' => $request->all(),
+                    'errors' => $validator->errors()
                 ]);
-            }else{
-                return true;
+
+                return Response::json($validator->errors());
             }
-            try {
-                Device::create([
+
+            $tokenRaw = $request->uid."".$request->appId;
+            $token = Hash::make($tokenRaw."".Str::random(10));
+
+                Device::updateOrCreate(
+                [
                     "uid" => $request->uid,
                     "appId" => $request->appId,
                     "language" => $request->language,
-                    "operating_system" => $request->operating_system
-                ]);
-                return ["token"=>$basicToken];
-            }catch (\Exception $e) {
-                return ["token"=>$basicToken];
-            }
+                    "operating_system" => $request->operating_system,
+                    "token" => $token
+                ],
+                ['uid' => $request->uid]
+                );
+                $response = ["token"=>$token];
+                return Response::json($response);
+
     }
 
 }

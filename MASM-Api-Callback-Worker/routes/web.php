@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/expire',[\App\Http\Controllers\MockController::class,'expireSubs']);
+Route::get('/cacheFlush', function () {
+    Cache::flush();
+    return "1";
+});

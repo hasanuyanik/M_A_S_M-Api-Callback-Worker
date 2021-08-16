@@ -8,27 +8,43 @@ use App\Models\Token;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 
 class PurchaseController extends Controller
 {
     public function purchase(Request $request){
-        try {
-            $uid=($tokenTable=Token::where('token',$request->client_token)->first()) ? $tokenTable->uid : 0;
-            $os=($deviceTable=Device::where('uid',$uid)->first()) ? $deviceTable->operating_system : "android";
+        $validator = Validator::make($request->all(), [
+            'client_token' => 'required|string',
+            'receipt' => 'required|string'
+        ]);
+
+        if ( $validator->fails() ) {
+            Log::error('Request validation failed.', [
+                'request' => $request->all(),
+                'errors' => $validator->errors()
+            ]);
+
+            return Response::json($validator->errors());
+        }
+            $os=($deviceTable=Device::where('token',$request->client_token)->first()) ? $deviceTable->operating_system : "android";
             $endPoint = ($os == "ios") ? "ios" : "google";
-            $apiResponse = Http::post("https://hasanuyanik.com/mock/ExamLaravel/public/api/".$endPoint, [
+            $response = Http::post("https://hasanuyanik.com/mock/ExamLaravel/public/api/".$endPoint, [
                 'receipt' => $request->receipt,
             ])->json();
-            ($uid != 0) ? Subscription::updateOrInsert([
-                'receipt' => $request->receipt,
-                'uid' => $uid,
-                'status' => $apiResponse['status'],
-                'expire_date' => $apiResponse['expire_date']
-            ]) : $apiResponse=false;
-            return $apiResponse;
-        }catch (\Exception $e) {
-            return $e;
-        }
-
+            if($deviceTable) {
+                (Subscription::updateOrCreate(
+                    [
+                        'receipt' => $request->receipt,
+                        'uid' => $deviceTable->uid,
+                        'status' => $response['status'],
+                        'expire_date' => $response['expire_date']
+                    ],
+                    ['uid' => $deviceTable->uid]
+                )) ? Log::info("Subscription Updated/Created") : $response = ["Satın alma işlemi yapılamadı"];
+            }
+            return Response::json($response);
     }
+
 }

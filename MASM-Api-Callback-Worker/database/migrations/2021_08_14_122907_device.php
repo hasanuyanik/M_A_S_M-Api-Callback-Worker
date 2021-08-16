@@ -19,6 +19,7 @@ class Device extends Migration
             $table->integer('appId');
             $table->string('language');
             $table->string('operating_system');
+            $table->string('token');
         });
     }
 
