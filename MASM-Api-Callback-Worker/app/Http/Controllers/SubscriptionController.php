@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Scalar\String_;
 
 class SubscriptionController extends Controller
 {
@@ -17,6 +19,7 @@ class SubscriptionController extends Controller
         ]);
 
         if ( $validator->fails() ) {
+
             Log::error('Request validation failed.', [
                 'request' => $request->all(),
                 'errors' => $validator->errors()
@@ -24,8 +27,21 @@ class SubscriptionController extends Controller
 
             return Response::json($validator->errors());
         }
-        $uid=($tokenTable=Device::where('token',$request->client_token)->first()) ? $tokenTable->uid : 0;
-        $status=($purchaseTable=Subscription::where('uid',$uid)->first()) ? $purchaseTable->status : 0;
+
+        if(Cache::has('checkSub_Status'.$request->client_token)){
+
+            $status = Cache::get('checkSub_Status'.$request->client_token);
+
+        }else {
+
+            $uid = ($tokenTable = Device::where('token', $request->client_token)->first()) ? $tokenTable->uid : 0;
+
+            $status = ($purchaseTable = Subscription::where('uid', $uid)->first()) ? $purchaseTable->status : 0;
+
+            $cacheName = 'checkSub_Status'.$request->client_token;
+            
+            Cache::put($cacheName,$status);
+        }
         $response = ["status"=>$status];
         return Response::json($response);
     }
