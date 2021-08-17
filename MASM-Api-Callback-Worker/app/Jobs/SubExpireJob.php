@@ -23,7 +23,7 @@ class SubExpireJob implements ShouldQueue
 
     public $uid, $receipt;
 
-    public $tries=10;
+    public $tries=3;
 
     public function __construct($uid,$receipt)
     {

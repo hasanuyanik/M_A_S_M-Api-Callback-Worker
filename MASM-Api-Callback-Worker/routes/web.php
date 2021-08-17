@@ -1,13 +1,7 @@
 <?php
 
-use App\Models\Subscription;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Response;
+
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +15,11 @@ use Illuminate\Support\Facades\Cache;
 */
 
 Route::get('/', function () {
+
+    \App\Models\Endpoints::create(["name" => "ios", "endpoint" => "ios"]);
+    \App\Models\Endpoints::create(["name" => "android", "endpoint" => "android"]);
+    \App\Models\Endpoints::create(["name" => "callback", "endpoint" => "callback"]);
+
     return view('welcome');
 });
 

@@ -18,9 +18,9 @@ class Report extends Migration
             $table->string('appId');
             $table->date('day');
             $table->string('operating_system');
-            $table->int('started_piece');
-            $table->int('renewed_piece');
-            $table->int('canceled_piece');
+            $table->integer('started_piece');
+            $table->integer('renewed_piece');
+            $table->integer('canceled_piece');
         });
     }
 

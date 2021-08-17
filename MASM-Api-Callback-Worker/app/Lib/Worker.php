@@ -36,30 +36,34 @@ class Worker extends Facade {
 
         $apiResponse = Http::post($MockUrl.$endPoint, [
             'receipt' => $receipt,
-        ])->json();
+        ]);
 
-        if(($apiResponse) && $apiResponse->error == "429 too many requests error"){
+        if($apiResponse->status() == 429){
 
             SubExpireJob::dispatch($uid,$receipt);
 
-            return true;
+            return;
 
         }
         $appId = $deviceTable->appId;
 
-        if($apiResponse['status'] == "1") {
-            Subscription::where('uid', $uid)->update(
-                [
+        $status = $apiResponse->json()['status'];
+
+        $expire_date = $apiResponse->json()['expire_date'];
+
+        if($status == 1) {
+            Subscription::where(['uid'=> $uid,'receipt'=> $receipt])->update([
                     'receipt' => $receipt,
                     'uid' => $uid,
-                    'status' => $apiResponse['status'],
-                    'expire_date' => $apiResponse['expire_date']
+                    'status' => $status,
+                    'expire_date' => $expire_date
                 ]);
 
             Report::reportSet($appId,$os,"Renewed");
 
             Callback::callbackSend($appId,$uid,"Renewed");
 
+            return;
         }
         Subscription::where('uid',$uid)->delete();
 

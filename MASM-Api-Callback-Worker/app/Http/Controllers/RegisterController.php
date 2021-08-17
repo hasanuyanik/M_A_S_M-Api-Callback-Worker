@@ -29,19 +29,31 @@ class RegisterController extends Controller
                 return Response::json($validator->errors());
             }
 
-            $tokenRaw = $request->uid."".$request->appId;
+            $uid = $request->uid;
+
+            $appId = $request->appId;
+
+            $language = $request->language;
+
+            $operating_system = $request->operating_system;
+
+            $tokenRaw = $uid."".$appId;
+
             $token = Hash::make($tokenRaw."".Str::random(10));
 
+
+
                 Device::updateOrCreate(
-                ['uid' => $request->uid],
+                ['uid' => $uid],
                 [
-                    "uid" => $request->uid,
-                    "appId" => $request->appId,
-                    "language" => $request->language,
-                    "operating_system" => $request->operating_system,
+                    "uid" => $uid,
+                    "appId" => $appId,
+                    "language" => $language,
+                    "operating_system" => $operating_system,
                     "token" => $token
                 ]
                 );
+
                 $response = ["token"=>$token];
                 return Response::json($response);
 

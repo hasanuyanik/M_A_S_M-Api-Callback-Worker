@@ -11,7 +11,7 @@ class Report extends Model
 
     protected $table = 'report';
 
-    protected $primaryKey = 'deviceId';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         "appId",
@@ -22,5 +22,5 @@ class Report extends Model
         "canceled_piece"
     ];
 
-    public $timestamps = true;
+    public $timestamps = false;
 }

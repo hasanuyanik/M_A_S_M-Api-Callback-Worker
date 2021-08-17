@@ -44,15 +44,27 @@ class PurchaseController extends Controller
 
             $apiResponse = Http::post($MockUrl.$endPoint, [
                 'receipt' => $receipt,
-            ])->json();
+            ]);
+
+            $response = ["Yeni Satın alma işlemi yapılamadı"];
 
             $appId = $deviceTable->appId;
+
             $uid = $deviceTable->uid;
-            $status = $apiResponse['status'];
-            $expire_date = $apiResponse['expire_date'];
+
+            if($apiResponse->status() == 429){
+
+                return Response::json($response);
+
+            }
+
+            $status = $apiResponse->json()['status'];
+
+            $expire_date = $apiResponse->json()['expire_date'];
+
             $event = "Started";
 
-        $response = ["Yeni Satın alma işlemi yapılamadı"];
+
         if($deviceTable) {
 
 
@@ -69,7 +81,7 @@ class PurchaseController extends Controller
                     ]
                 );
 
-                $response= $apiResponse;
+                $response= $apiResponse->json();
 
                 Report::reportSet($appId,$os,"Started");
 

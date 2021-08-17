@@ -11,7 +11,7 @@ class Device extends Model
 
     protected $table = 'device';
 
-    protected $primaryKey = 'deviceId';
+    protected $primaryKey = 'uid';
 
     protected $fillable = [
         "uid",

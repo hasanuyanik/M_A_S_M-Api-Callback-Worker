@@ -2,6 +2,7 @@
 
 namespace App\Lib;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Response;
 use Psy\Util\Json;
@@ -14,6 +15,8 @@ class Report extends Facade
         $dateTime = Carbon::now('-06:00');
         $today = $dateTime->format('Y-m-d');
 
+
+
         $todayData = \App\Models\Report::where(
             [
                 'day'=>$today,
@@ -22,9 +25,16 @@ class Report extends Facade
             ]
         )->first();
 
-        $started_piece = ($todayData->started_piece)+($event == "Started") ? 1 : 0;
-        $renewed_piece = ($todayData->renewed_piece)+($event == "Renewed") ? 1 : 0;
-        $canceled_piece = ($todayData->canceled_piece)+($event == "Canceled") ? 1 : 0;
+            $currentStartedPiece = 0; $currentRenewedPiece = 0; $currentCanceledPiece = 0;
+        if($todayData) {
+            $currentStartedPiece = ($todayData->started_piece > 0) ? $todayData->started_piece : 0;
+            $currentRenewedPiece = ($todayData->renewed_piece > 0) ? $todayData->renewed_piece : 0;
+            $currentCanceledPiece = ($todayData->canceled_piece > 0) ? $todayData->canceled_piece : 0;
+        }
+
+        $started_piece = $currentStartedPiece+(($event == "Started") ? 1 : 0);
+        $renewed_piece = $currentRenewedPiece+(($event == "Renewed") ? 1 : 0);
+        $canceled_piece = $currentCanceledPiece+(($event == "Canceled") ? 1 : 0);
 
         \App\Models\Report::updateOrCreate(
             [
