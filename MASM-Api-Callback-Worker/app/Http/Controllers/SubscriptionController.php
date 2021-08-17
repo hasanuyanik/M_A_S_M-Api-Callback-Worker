@@ -39,7 +39,7 @@ class SubscriptionController extends Controller
             $status = ($purchaseTable = Subscription::where('uid', $uid)->first()) ? $purchaseTable->status : 0;
 
             $cacheName = 'checkSub_Status'.$request->client_token;
-            
+
             Cache::put($cacheName,$status);
         }
         $response = ["status"=>$status];

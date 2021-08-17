@@ -15,8 +15,8 @@ class Subscription extends Migration
     {
         Schema::create('subscription', function (Blueprint $table) {
             $table->id();
-            $table->longText('receipt');
-            $table->integer('uid');
+            $table->longText('receipt')->unique();
+            $table->string('uid');
             $table->boolean('status');
             $table->dateTime('expire_date');
         });

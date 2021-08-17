@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Lib\Callback;
 use App\Models\Device;
+use App\Models\Endpoints;
 use App\Models\Subscription;
-use App\Models\Token;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +15,14 @@ use Illuminate\Support\Facades\Validator;
 class PurchaseController extends Controller
 {
     public function purchase(Request $request){
+
+        $MockUrl = "https://hasanuyanik.com/mock/ExamLaravel/public/api/";
+
+        $googleEndPoint = EndPoints::where('name','google')->first('endpoint')->endpoint;
+
+        $iosEndPoint = EndPoints::where('name','ios')->first('endpoint')->endpoint;
+
+
         $validator = Validator::make($request->all(), [
             'client_token' => 'required|string',
             'receipt' => 'required|string'
@@ -28,22 +36,43 @@ class PurchaseController extends Controller
 
             return Response::json($validator->errors());
         }
+        $receipt = $request->receipt;
+
             $os=($deviceTable=Device::where('token',$request->client_token)->first()) ? $deviceTable->operating_system : "android";
-            $endPoint = ($os == "ios") ? "ios" : "google";
-            $response = Http::post("https://hasanuyanik.com/mock/ExamLaravel/public/api/".$endPoint, [
-                'receipt' => $request->receipt,
+            $endPoint = ($os == "ios") ? $iosEndPoint : $googleEndPoint;
+
+            $apiResponse = Http::post($MockUrl.$endPoint, [
+                'receipt' => $receipt,
             ])->json();
-            if($deviceTable) {
-                (Subscription::updateOrCreate(
+
+            $appId = $deviceTable->appId;
+            $uid = $deviceTable->uid;
+            $status = $apiResponse['status'];
+            $expire_date = $apiResponse['expire_date'];
+            $event = "Started";
+
+        $response = ["Yeni Satın alma işlemi yapılamadı"];
+        if($deviceTable) {
+
+
+                $purchase = Subscription::updateOrCreate(
                     [
-                        'receipt' => $request->receipt,
-                        'uid' => $deviceTable->uid,
-                        'status' => $response['status'],
-                        'expire_date' => $response['expire_date']
+                        'receipt' => $receipt,
+                        'uid' => $uid
                     ],
-                    ['uid' => $deviceTable->uid]
-                )) ? Log::info("Subscription Updated/Created") : $response = ["Satın alma işlemi yapılamadı"];
-            }
+                    [
+                        'receipt' => $receipt,
+                        'uid' => $uid,
+                        'status' => $status,
+                        'expire_date' => $expire_date
+                    ]
+                );
+
+                $response= $apiResponse;
+
+                Callback::callbackSend($appId,$uid,$event);
+        }
+
             return Response::json($response);
     }
 

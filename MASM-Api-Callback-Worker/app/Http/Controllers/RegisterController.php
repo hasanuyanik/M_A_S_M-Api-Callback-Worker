@@ -33,14 +33,14 @@ class RegisterController extends Controller
             $token = Hash::make($tokenRaw."".Str::random(10));
 
                 Device::updateOrCreate(
+                ['uid' => $request->uid],
                 [
                     "uid" => $request->uid,
                     "appId" => $request->appId,
                     "language" => $request->language,
                     "operating_system" => $request->operating_system,
                     "token" => $token
-                ],
-                ['uid' => $request->uid]
+                ]
                 );
                 $response = ["token"=>$token];
                 return Response::json($response);

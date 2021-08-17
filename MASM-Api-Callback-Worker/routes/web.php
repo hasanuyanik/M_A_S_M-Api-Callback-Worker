@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Subscription;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +24,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/expire',[\App\Http\Controllers\MockController::class,'expireSubs']);
+Route::get('/veri', function () {
+    $result = \App\Jobs\CallbackJob::dispatch("1","1","Started");
+    return Response::json([$result]);
+});
+
 Route::get('/cacheFlush', function () {
     Cache::flush();
     return "1";

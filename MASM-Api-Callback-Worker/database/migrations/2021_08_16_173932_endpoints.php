@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Device extends Migration
+class Endpoints extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class Device extends Migration
      */
     public function up()
     {
-        Schema::create('device', function (Blueprint $table) {
-            $table->string('uid')->unique();
-            $table->string('appId');
-            $table->string('language');
-            $table->string('operating_system');
-            $table->string('token');
+        Schema::create('endpoints', function (Blueprint $table) {
+            $table->id()->unique();
+            $table->string('name');
+            $table->string('endpoint');
         });
+
     }
 
     /**
@@ -29,6 +28,5 @@ class Device extends Migration
      */
     public function down()
     {
-        //
     }
 }

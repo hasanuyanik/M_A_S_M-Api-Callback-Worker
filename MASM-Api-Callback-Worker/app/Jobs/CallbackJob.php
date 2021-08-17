@@ -3,42 +3,39 @@
 namespace App\Jobs;
 
 use App\Lib\Callback;
-use App\Lib\Worker;
-use App\Models\Device;
 use App\Models\Endpoints;
-use App\Models\Subscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class SubExpireJob implements ShouldQueue
+class CallbackJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $uid, $receipt;
+    public $appId, $deviceId, $event;
 
     public $tries=10;
 
-    public function __construct($uid,$receipt)
+    public function __construct($appId, $deviceId, $event)
     {
-        $this->uid = $uid;
+        $this->appId = $appId;
 
-        $this->receipt = $receipt;
+        $this->deviceId = $deviceId;
+
+        $this->event = $event;
     }
 
 
     public function handle()
     {
-        $uid = $this->uid;
+        $appId = $this->appId; $deviceId = $this->deviceId; $event = $this->event;
 
-        $receipt = $this->receipt;
+        Callback::callbackSend($appId,$deviceId,$event);
 
-        Worker::purchaseSet($uid,$receipt);
     }
 }
