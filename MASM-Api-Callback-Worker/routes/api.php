@@ -22,5 +22,5 @@ Route::post('/register',[\App\Http\Controllers\RegisterController::class,'regist
 Route::post('/purchase',[\App\Http\Controllers\PurchaseController::class,'purchase']);
 Route::post('/check-subscription',[\App\Http\Controllers\SubscriptionController::class,'checkSubscription']);
 
-Route::post('/report',[\App\Http\Controllers\MockController::class,'report']);
+Route::post('/report',[\App\Http\Controllers\ReportController::class,'report']);
 

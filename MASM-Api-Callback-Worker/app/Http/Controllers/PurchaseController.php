@@ -46,7 +46,10 @@ class PurchaseController extends Controller
                 'receipt' => $receipt,
             ]);
 
-            $response = ["Yeni Satın alma işlemi yapılamadı"];
+            $response = [
+                'status' => false,
+                'message' => 'Yeni Satın alma işlemi yapılamadı'
+            ];
 
             $appId = $deviceTable->appId;
 
