@@ -26,6 +26,7 @@ class Callback extends Facade {
         if($callbackResponse != 200 && $callbackResponse != 201){
             CallbackJob::dispatch($appId,$deviceId,$event);
             Log::info("Callback işlemi kuyruğa aktarıldı. Event:".$event." - AppId:".$appId." - DeviceId".$deviceId);
+            return;
         }
         Log::info("Callback işlemi başarılı. Event:".$event." - AppId:".$appId." - DeviceId".$deviceId);
     }

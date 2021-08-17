@@ -24,12 +24,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/veri', function () {
-    $result = \App\Jobs\CallbackJob::dispatch("1","1","Started");
-    return Response::json([$result]);
-});
 
-Route::get('/cacheFlush', function () {
-    Cache::flush();
-    return "1";
-});

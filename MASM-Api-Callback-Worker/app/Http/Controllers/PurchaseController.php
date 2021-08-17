@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Lib\Callback;
+use App\Lib\Report;
 use App\Models\Device;
 use App\Models\Endpoints;
 use App\Models\Subscription;
@@ -69,6 +70,8 @@ class PurchaseController extends Controller
                 );
 
                 $response= $apiResponse;
+
+                Report::reportSet($appId,$os,"Started");
 
                 Callback::callbackSend($appId,$uid,$event);
         }

@@ -2,7 +2,6 @@
 
 namespace App\Lib;
 
-use App\Jobs\CallbackJob;
 use App\Jobs\SubExpireJob;
 use App\Models\Device;
 use App\Models\Endpoints;
@@ -56,9 +55,16 @@ class Worker extends Facade {
                     'status' => $apiResponse['status'],
                     'expire_date' => $apiResponse['expire_date']
                 ]);
+
+            Report::reportSet($appId,$os,"Renewed");
+
             Callback::callbackSend($appId,$uid,"Renewed");
+
         }
         Subscription::where('uid',$uid)->delete();
+
+        Report::reportSet($appId,$os,"Canceled");
+
         Callback::callbackSend($appId,$uid,"Canceled");
 
         Log::info('Queue Sub Control is working');
